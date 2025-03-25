@@ -1,5 +1,6 @@
 #!/bin/bash
-# Shell Script for Piping Commands
+
+#Shell Script for Piping Commands
 # Usage: ./piping_commands.sh
 
 # Function to display the contents of the current directory
@@ -18,23 +19,28 @@ filter_and_sort_contents() {
 	echo ""
 }
 
-# Function to search for a file or folder
-search_file_or_folder() {
-	read -p "Enter a keyword to search for files or folders: " keyword
-	echo "Searching for files or folders containing '$keyword'..."
-	# Use find to search for files or directories containing the keyword
-	find . -name "*$keyword*" -print | sort
-	echo ""
+# Function to search a file or folder
+search_file_folder() {
+    read -p "Enter a name of the file or folder: " name
+    echo "Searching for the file or folder with name '$name'..."
+    # Use ls and grep in a pipeline, checking for results
+    result=$(ls -l | grep "$name")
+    if [[ -n "$result" ]]; then
+        echo "$result"
+    else
+        echo "No such file or folder found."
+    fi
+    echo ""
 }
 
 # Function to print the number of files and folders
-count_files_and_folders() {
-    echo "Counting the number of files and folders in the current directory..."
-    # Use `find` to count files and directories, excluding the hidden ones
-    file_count=$(find . -type f | wc -l)
-    folder_count=$(find . -type d | wc -l)
-    echo "Number of files: $file_count"
-    echo "Number of folders: $folder_count"
+number_of_files_folders() {
+    echo "Counting files and directories..."
+    # Use ls and wc to count files and directories
+    num_files=$(ls -l | grep -v ^d | wc -l) # Count files
+    num_dirs=$(ls -l | grep ^d | wc -l)     # Count directories
+    echo "Number of files: $num_files"
+    echo "Number of directories: $num_dirs"
     echo ""
 }
 
@@ -43,12 +49,13 @@ echo "Piping Commands Manager"
 echo "1. List contents of the current directory"
 echo "2. Filter and sort directory contents"
 echo "3. Search a file or folder"
-echo "4. Number of files and folders"
+echo "4. Print the number of files and directories"
 echo "5. Exit"
 
 # Loop until the user chooses to exit
 while true; do
 	read -p "Select an option (1-5): " option
+	
 	case $option in
 		1) # List directory contents
 		list_directory_contents
@@ -57,11 +64,11 @@ while true; do
 		filter_and_sort_contents
 		;;
 		3) # Search a file or folder
-		search_file_or_folder
+		search_file_folder
 		;;
-		4) # Count files and folders
-        	count_files_and_folders
-        	;;
+		4) # Print the number of files and folders
+		number_of_files_folders
+		;;
 		5) # Exit the script
 		echo "Exiting the Piping Commands Manager. Goodbye!"
 		exit 0
@@ -72,4 +79,3 @@ while true; do
 	esac
 	echo "" # Print a newline for better readability
 done
-
